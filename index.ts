@@ -50,3 +50,11 @@ app.get('/api/db-check', async (_req, res) => {
 app.listen(port, (): void => {
   console.log(`Server started: http://localhost:${port}`);
 });
+
+// [追加] AI質問機能ルーター
+import aiRouter from './src/apps/ai/aiRouter';
+
+// [追加] /ai パスへのマウント（404ハンドラーより前に配置）
+app.use('/ai', aiRouter);
+
+// --- 既存の404ハンドラー・グローバルエラーハンドラー ---

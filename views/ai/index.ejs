@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #cbd5e1;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --danger-text: #b91c1c;
+      --warning-text: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .ai-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .ai-nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .ai-nav a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    .ai-nav a:hover {
+      text-decoration: underline;
+    }
+
+    .ai-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .ai-header {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    .ai-subtitle {
+      margin-top: 0;
+      margin-bottom: 1.25rem;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .question-textarea {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      resize: vertical;
+      transition: border-color 0.15s;
+    }
+
+    .question-textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .question-textarea:disabled {
+      background-color: #f1f5f9;
+      cursor: not-allowed;
+    }
+
+    .form-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .char-count.is-warning {
+      color: var(--warning-text);
+      font-weight: 600;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color 0.15s, opacity 0.15s;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #f1f5f9;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .loading-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      color: #1e40af;
+      margin-bottom: 1.5rem;
+    }
+
+    .loading-box[hidden],
+    .error-box[hidden],
+    .answer-section[hidden] {
+      display: none;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid #bfdbfe;
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-box {
+      padding: 1rem 1.25rem;
+      background-color: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: 6px;
+      color: var(--danger-text);
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .answer-title {
+      margin: 0;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .model-badge {
+      font-size: 0.75rem;
+      font-weight: 500;
+      background-color: #f1f5f9;
+      color: var(--text-secondary);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .answer-content {
+      font-size: 1rem;
+      word-break: break-word;
+    }
+
+    .answer-content pre {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+    }
+
+    .answer-content code {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .answer-content pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+    }
+  </style>
+  <script src="/ai/ai.js" defer></script>
+</head>
+<body>
+  <main class="ai-container">
+    <nav class="ai-nav" aria-label="ページナビゲーション">
+      <a href="/">&larr; TOPへ戻る</a>
+      <a href="/todo">TODO一覧へ</a>
+    </nav>
+
+    <section class="ai-card">
+      <h1 class="ai-header"><%= title %></h1>
+      <p class="ai-subtitle">疑問点や調べたいことを入力すると、AIが回答を生成します。</p>
+
+      <form id="ai-ask-form" novalidate>
+        <div class="form-group">
+          <textarea
+            id="question-input"
+            class="question-textarea"
+            name="question"
+            rows="5"
+            maxlength="<%= maxLength %>"
+            placeholder="AIに質問したい内容を入力してください...（Ctrl + Enter で送信）"
+            aria-label="質問内容"
+          ></textarea>
+          <div class="form-meta">
+            <span>最大 <%= maxLength.toLocaleString() %> 文字まで入力可能</span>
+            <span id="char-count" class="char-count">0 / <%= maxLength %></span>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" id="submit-button" class="btn btn-primary">質問する</button>
+          <button type="button" id="clear-button" class="btn btn-secondary">クリア</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="loading-indicator" class="loading-box" hidden aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <span>AIが回答を生成しています...</span>
+    </div>
+
+    <div id="error-box" class="error-box" role="alert" hidden></div>
+
+    <section id="answer-section" class="ai-card answer-section" hidden aria-live="polite">
+      <div class="answer-header">
+        <h2 class="answer-title">
+          AIの回答
+          <span id="answer-model" class="model-badge"></span>
+        </h2>
+        <button type="button" id="copy-button" class="btn btn-secondary btn-sm">回答をコピー</button>
+      </div>
+      <div id="answer-content" class="answer-content"></div>
+    </section>
+  </main>
+</body>
+</html>
